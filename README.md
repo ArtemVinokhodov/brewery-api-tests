@@ -1,0 +1,205 @@
+# OpenBreweryDB API Test Automation  
+Java | REST | Assured | TestNG
+
+This project contains automated tests for the **"Search Breweries"** endpoint of the OpenBreweryDB public API.  
+It is implemented using **Java 17**, **REST Assured**, **Maven**, **TestNG**, **AssertJ**, and **Lombok**.
+
+---
+
+## 1. Covered API Method
+### **Search Breweries**
+Documentation:  
+https://www.openbrewerydb.org/documentation
+
+Endpoint:  
+`GET /v1/breweries/search`
+
+Supported query parameters:
+
+| Parameter | Description |
+|----------|-------------|
+| `query` | Search term used for brewery name matching |
+| `page` | Page number (pagination) |
+| `per_page` | Items per page (default: 50, maximum currently returns up to ~1000 depending on dataset) |
+
+---
+
+## 2. Implemented Test Scenarios (5 core scenarios)
+
+Below are the scenarios implemented in code as required by the assignment:
+
+### **1. Search by existing substring returns non-empty results**
+- Query: `"dog"`
+- Verifies that the search returns results and respects `per_page` limit (5 items max).
+- Checks that at least one brewery name contains the search term (case-insensitive).
+- Note: API searches across multiple fields (name, city, state), so not all results may have "dog" in the name.
+
+### **2. Search with no matching term returns empty result**
+- Query: `"qwerty12345"` (random non-existing term)
+- Verifies that API returns an empty array when no matches are found.
+
+### **3. `per_page` parameter limits the number of returned items**
+- Query: `"brew"` with `per_page = 3`
+- Validates that API respects the `per_page` parameter and returns no more than requested items.
+
+### **4. Pagination: different pages return different result sets**
+- Query: `"beer"` with `page = 1` and `page = 2`, each with `per_page = 5`
+- Ensures that the second page does not fully duplicate the first page.
+- Test is resilient: if the second page is empty (not enough data), the test passes gracefully.
+
+### **5. Large `per_page` request does not exceed the requested size**
+- Query: `"brew"` with `per_page = 200`
+- Validates a general API invariant: even with large `per_page` values, API never returns more items than requested.
+
+---
+
+## 3. Additional Recommended Scenarios (not implemented, listed as requested)
+
+These scenarios could be included in an extended test suite:
+
+### **Functional**
+- Search with special characters (`"brew&co"`, `"!@#$%"`).
+- Case-insensitive search verification.
+- Search with unicode (e.g., `"łódź"`, `"kühn"`).
+- Search by exact match vs partial matching.
+
+### **Pagination**
+- Boundary values:  
+  `page = 0`, `page = -1`, `page = very large number`.
+- Verify consistency between pages (no duplicates across pages).
+
+### **per_page behavior**
+- `per_page = 1` returns exactly 1 item (if available).
+- `per_page = 0` / negative values.
+- API capping logic if the API enforces limits.
+
+### **Response structure**
+- All required fields exist in Brewery DTO.
+- Fields ignored safely when API adds new fields (`@JsonIgnoreProperties`).
+
+### **Performance**
+- Response time under acceptable threshold (e.g., <1s).
+
+---
+
+## 4. Thoughts on Automating “List Breweries”
+
+Endpoint:  
+`GET /v1/breweries`
+
+This method returns full brewery lists with pagination and supports multiple filters.
+
+### **Suggested Test Automation Approach**
+
+#### 1. **Layered Architecture**
+- **Client layer**: Encapsulates REST Assured calls.
+- **DTOs**: Brewery model mapped with Jackson.
+- **Config layer**: Base URI, common request spec, logging.
+- **Test layer**: Test scenarios only, no direct REST Assured usage.
+
+(This approach is already implemented in this project.)
+
+#### 2. **Test Design Techniques**
+Use classic API testing techniques:
+
+#####  **Equivalence Partitioning**
+- Valid pages (1, 2…)
+- Invalid pages (0, -1)
+- Boundary values for `per_page`
+
+#####  **Boundary Value Analysis**
+- `per_page`: 1, 50, 200, >200
+- `page`: 1, 2, large numbers
+
+#####  **Negative Testing**
+- Invalid parameter types (string instead of number)
+- Missing parameters
+- Unsupported filters
+
+#####  **Data-Driven Testing**
+- Using different combinations of filters for List Breweries:
+    - `by_city`
+    - `by_type`
+    - `by_state`
+    - `by_country`
+
+#####  **Schema Validation**
+- Validate response structure with JSON schema.
+
+#####  **Sorting Validation**
+Test endpoint ordering logic if applicable.
+
+---
+
+## 5. Estimated Effort for Full Automation
+
+| Task | Estimated Time |
+|------|----------------|
+| Implement base framework (specs, config, client) | 1–2 hours |
+| Add coverage for all parameters (`by_city`, `by_type`, etc.) | 4–6 hours |
+| Add pagination boundary tests | 1 hour |
+| JSON schema validation | 1 hour |
+| Data-driven testing setup | 1 hour |
+| Full documentation + cleanup | 1 hour |
+
+**Total estimated effort: 8-12 hours**  
+(depending on required coverage level).
+
+---
+
+## 6. How to Run Tests
+
+### **Using Maven**
+```bash
+mvn clean test
+```
+
+### **Using IntelliJ IDEA**
+1. Open the project.
+2. Navigate to `src/test/java/com/artem/brewery/tests/SearchBreweriesTest.java`.
+3. Right-click the class and select **Run** with TestNG.
+
+---
+
+## 7. Project Structure
+```
+src
+ ├─ main
+ │   └─ java
+ │       └─ com.artem.brewery
+ │            ├─ client
+ │            │    ├─ OpenBreweryClient.java
+ │            │    └─ SearchBreweriesRequest.java
+ │            ├─ config
+ │            │    └─ ApiConfig.java
+ │            ├─ dto
+ │            │    └─ Brewery.java
+ │            └─ manager
+ │                 └─ ApiManager.java
+ └─ test
+     └─ java
+         └─ com.artem.brewery.tests
+              └─ SearchBreweriesTest.java
+```
+
+---
+
+## 8. Technologies Used
+
+- Java 17
+- REST Assured
+- TestNG
+- Maven
+- Lombok
+- AssertJ
+- Jackson
+
+## 9. Notes
+
+OpenBreweryDB is a public API, and field structure may change.
+
+DTOs are configured to ignore unknown fields to keep tests stable.
+
+per_page real behavior may differ from documentation due to dataset size; tests validate functional invariants rather than hardcoded numeric limits.
+
+If you have questions or want to extend the project - feel free to ask.
