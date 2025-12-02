@@ -239,13 +239,13 @@ src
  │   ├─ java
  │   │   └─ com.qa.brewery
  │   │        ├─ client
- │   │        │    ├─ OpenBreweryClient.java
- │   │        │    └─ SearchBreweriesRequest.java
+ │   │        │    └─ OpenBreweryClient.java
  │   │        ├─ config
  │   │        │    ├─ ApiConfig.java
  │   │        │    └─ EnvironmentConfig.java
  │   │        ├─ dto
- │   │        │    └─ Brewery.java
+ │   │        │    ├─ Brewery.java
+ │   │        │    └─ BrewerySearchParams.java
  │   │        └─ manager
  │   │             └─ ApiManager.java
  │   └─ resources

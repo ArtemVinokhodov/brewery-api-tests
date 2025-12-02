@@ -1,7 +1,7 @@
 package com.qa.brewery.steps;
 
 import com.qa.brewery.client.OpenBreweryClient;
-import com.qa.brewery.client.SearchBreweriesRequest;
+import com.qa.brewery.dto.BrewerySearchParams;
 import com.qa.brewery.dto.Brewery;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
@@ -23,13 +23,13 @@ public class BreweriesApiSteps {
     public List<Brewery> searchBreweries(String query, int page, int perPage) {
         log.info("Searching breweries: query='{}', page={}, perPage={}", query, page, perPage);
 
-        SearchBreweriesRequest request = SearchBreweriesRequest.builder()
+        BrewerySearchParams params = BrewerySearchParams.builder()
                 .query(query)
                 .page(page)
                 .perPage(perPage)
                 .build();
 
-        Response response = client.searchBreweries(request);
+        Response response = client.searchBreweries(params);
         log.info("Response status: {}", response.statusCode());
 
         if (response.statusCode() != 200) {
@@ -47,12 +47,12 @@ public class BreweriesApiSteps {
         }
     }
 
-    @Step("Search breweries with request")
-    public List<Brewery> searchBreweries(SearchBreweriesRequest request) {
+    @Step("Search breweries with params")
+    public List<Brewery> searchBreweries(BrewerySearchParams params) {
         log.info("Searching breweries: query='{}', page={}, perPage={}",
-                request.getQuery(), request.getPage(), request.getPerPage());
+                params.getQuery(), params.getPage(), params.getPerPage());
 
-        Response response = client.searchBreweries(request);
+        Response response = client.searchBreweries(params);
         log.info("Response status: {}", response.statusCode());
 
         if (response.statusCode() != 200) {
@@ -71,11 +71,11 @@ public class BreweriesApiSteps {
     }
 
     @Step("Get raw response for search breweries")
-    public Response searchBreweriesRaw(SearchBreweriesRequest request) {
+    public Response searchBreweriesRaw(BrewerySearchParams params) {
         log.info("Searching breweries (raw): query='{}', page={}, perPage={}",
-                request.getQuery(), request.getPage(), request.getPerPage());
+                params.getQuery(), params.getPage(), params.getPerPage());
 
-        Response response = client.searchBreweries(request);
+        Response response = client.searchBreweries(params);
         log.info("Response status: {}", response.statusCode());
 
         return response;

@@ -1,5 +1,6 @@
 package com.qa.brewery.client;
 
+import com.qa.brewery.dto.BrewerySearchParams;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
@@ -18,13 +19,13 @@ public class OpenBreweryClient {
         this.spec = spec;
     }
 
-    public Response searchBreweries(SearchBreweriesRequest request) {
+    public Response searchBreweries(BrewerySearchParams params) {
         return given()
                 .spec(spec)
                 .when()
-                .queryParam(PARAM_QUERY, request.getQuery())
-                .queryParam(PARAM_PAGE, request.getPage())
-                .queryParam(PARAM_PER_PAGE, request.getPerPage())
+                .queryParam(PARAM_QUERY, params.getQuery())
+                .queryParam(PARAM_PAGE, params.getPage())
+                .queryParam(PARAM_PER_PAGE, params.getPerPage())
                 .get(PATH_SEARCH);
     }
 }
