@@ -1,10 +1,7 @@
 package com.qa.brewery.client;
 
-import io.qameta.allure.Step;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import com.qa.brewery.dto.Brewery;
-
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
@@ -21,19 +18,13 @@ public class OpenBreweryClient {
         this.spec = spec;
     }
 
-    @Step("Search breweries with query: {request.query}, page: {request.page}, perPage: {request.perPage}")
-    public List<Brewery> searchBreweries(SearchBreweriesRequest request) {
+    public Response searchBreweries(SearchBreweriesRequest request) {
         return given()
                 .spec(spec)
                 .when()
                 .queryParam(PARAM_QUERY, request.getQuery())
                 .queryParam(PARAM_PAGE, request.getPage())
                 .queryParam(PARAM_PER_PAGE, request.getPerPage())
-                .get(PATH_SEARCH)
-                .then()
-                .statusCode(200)
-                .extract()
-                .jsonPath()
-                .getList("", Brewery.class);
+                .get(PATH_SEARCH);
     }
 }

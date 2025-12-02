@@ -256,6 +256,8 @@ src
  │        └─ log4j2.xml
  └─ test
      └─ java
+         ├─ com.qa.brewery.steps
+         │    └─ BreweriesApiSteps.java
          └─ com.qa.brewery.tests
               └─ SearchBreweriesTest.java
 ```

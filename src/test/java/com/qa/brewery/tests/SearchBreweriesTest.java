@@ -1,10 +1,10 @@
 package com.qa.brewery.tests;
 
-import com.qa.brewery.client.OpenBreweryClient;
 import com.qa.brewery.client.SearchBreweriesRequest;
 import com.qa.brewery.config.ApiConfig;
 import com.qa.brewery.dto.Brewery;
 import com.qa.brewery.manager.ApiManager;
+import com.qa.brewery.steps.BreweriesApiSteps;
 import io.qameta.allure.*;
 import lombok.extern.log4j.Log4j2;
 import org.testng.annotations.BeforeClass;
@@ -20,14 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Feature("Search Breweries")
 public class SearchBreweriesTest {
 
-    private ApiManager api;
-    private OpenBreweryClient breweries;
+    private BreweriesApiSteps breweriesSteps;
 
     @BeforeClass
     public void setUp() {
         log.info("Setting up API client for OpenBreweryDB tests");
-        api = new ApiManager(ApiConfig.getInstance().getRequestSpec());
-        breweries = api.breweries();
+        ApiManager api = new ApiManager(ApiConfig.getInstance().getRequestSpec());
+        breweriesSteps = new BreweriesApiSteps(api.breweries());
         log.info("API client initialized successfully");
     }
 
@@ -42,7 +41,7 @@ public class SearchBreweriesTest {
                 .perPage(5)
                 .build();
 
-        List<Brewery> result = breweries.searchBreweries(request);
+        List<Brewery> result = breweriesSteps.searchBreweries(request);
 
         assertThat(result)
                 .as("Search should return some results for a popular query 'dog'")
@@ -70,7 +69,7 @@ public class SearchBreweriesTest {
                 .perPage(10)
                 .build();
 
-        List<Brewery> result = breweries.searchBreweries(request);
+        List<Brewery> result = breweriesSteps.searchBreweries(request);
 
         assertThat(result)
                 .as("Search with a non-existing term should return an empty list")
@@ -88,7 +87,7 @@ public class SearchBreweriesTest {
                 .perPage(3)
                 .build();
 
-        List<Brewery> result = breweries.searchBreweries(request);
+        List<Brewery> result = breweriesSteps.searchBreweries(request);
 
         assertThat(result)
                 .as("API should respect per_page parameter")
@@ -113,8 +112,8 @@ public class SearchBreweriesTest {
                 .perPage(5)
                 .build();
 
-        List<Brewery> firstPage = breweries.searchBreweries(firstPageRequest);
-        List<Brewery> secondPage = breweries.searchBreweries(secondPageRequest);
+        List<Brewery> firstPage = breweriesSteps.searchBreweries(firstPageRequest);
+        List<Brewery> secondPage = breweriesSteps.searchBreweries(secondPageRequest);
 
         assertThat(firstPage)
                 .as("First page should not be empty for a popular term")
@@ -151,7 +150,7 @@ public class SearchBreweriesTest {
                 .perPage(requestedPerPage)
                 .build();
 
-        List<Brewery> result = breweries.searchBreweries(request);
+        List<Brewery> result = breweriesSteps.searchBreweries(request);
 
         assertThat(result)
                 .as("API should not return more items than requested per_page")
@@ -164,24 +163,17 @@ public class SearchBreweriesTest {
     @Severity(SeverityLevel.NORMAL)
     @Description("Verify that API handles empty query parameter gracefully")
     public void searchWithEmptyQuery() {
-        log.info("Starting test: searchWithEmptyQuery");
         SearchBreweriesRequest request = SearchBreweriesRequest.builder()
                 .query("")
                 .page(1)
                 .perPage(10)
                 .build();
 
-        try {
-            List<Brewery> result = breweries.searchBreweries(request);
-            assertThat(result)
-                    .as("API should return empty list when query is empty")
-                    .isEmpty();
-        } catch (ClassCastException e) {
-            log.info("API returns error object for empty query (expected behavior)");
-            assertThat(e.getMessage())
-                    .as("API should return error response for empty query")
-                    .contains("LinkedHashMap");
-        }
+        List<Brewery> result = breweriesSteps.searchBreweries(request);
+
+        assertThat(result)
+                .as("API should return empty list when query is empty")
+                .isEmpty();
     }
 
     @Test
@@ -189,18 +181,17 @@ public class SearchBreweriesTest {
     @Severity(SeverityLevel.NORMAL)
     @Description("Verify that API handles special characters in query parameter")
     public void searchWithSpecialCharacters() {
-        log.info("Starting test: searchWithSpecialCharacters");
         SearchBreweriesRequest request = SearchBreweriesRequest.builder()
                 .query("!@#$%^&*()")
                 .page(1)
                 .perPage(10)
                 .build();
 
-        List<Brewery> result = breweries.searchBreweries(request);
+        List<Brewery> result = breweriesSteps.searchBreweries(request);
 
         assertThat(result)
-                .as("API should handle special characters without errors")
-                .isNotNull();
+                .as("API should handle special characters without errors and return empty list")
+                .isEmpty();
     }
 
     @Test
@@ -208,17 +199,16 @@ public class SearchBreweriesTest {
     @Severity(SeverityLevel.NORMAL)
     @Description("Verify that API handles zero value for page parameter")
     public void searchWithZeroPage() {
-        log.info("Starting test: searchWithZeroPage with page=0");
         SearchBreweriesRequest request = SearchBreweriesRequest.builder()
                 .query("beer")
                 .page(0)
                 .perPage(10)
                 .build();
 
-        List<Brewery> result = breweries.searchBreweries(request);
+        List<Brewery> result = breweriesSteps.searchBreweries(request);
 
         assertThat(result)
-                .as("API should handle page=0 gracefully (may return empty or first page)")
+                .as("API should handle page=0 gracefully")
                 .isNotNull();
     }
 
@@ -227,24 +217,17 @@ public class SearchBreweriesTest {
     @Severity(SeverityLevel.NORMAL)
     @Description("Verify that API handles zero value for per_page parameter")
     public void searchWithZeroPerPage() {
-        log.info("Starting test: searchWithZeroPerPage with per_page=0");
         SearchBreweriesRequest request = SearchBreweriesRequest.builder()
                 .query("beer")
                 .page(1)
                 .perPage(0)
                 .build();
 
-        try {
-            List<Brewery> result = breweries.searchBreweries(request);
-            assertThat(result)
-                    .as("API should return empty list when per_page=0")
-                    .isEmpty();
-        } catch (ClassCastException e) {
-            log.info("API returns error object for per_page=0 (expected behavior)");
-            assertThat(e.getMessage())
-                    .as("API should return error response for per_page=0")
-                    .contains("LinkedHashMap");
-        }
+        List<Brewery> result = breweriesSteps.searchBreweries(request);
+
+        assertThat(result)
+                .as("API should return empty list when per_page=0")
+                .isEmpty();
     }
 
     @Test
@@ -252,14 +235,13 @@ public class SearchBreweriesTest {
     @Severity(SeverityLevel.NORMAL)
     @Description("Verify that API handles negative value for page parameter")
     public void searchWithNegativePage() {
-        log.info("Starting test: searchWithNegativePage with page=-1");
         SearchBreweriesRequest request = SearchBreweriesRequest.builder()
                 .query("beer")
                 .page(-1)
                 .perPage(10)
                 .build();
 
-        List<Brewery> result = breweries.searchBreweries(request);
+        List<Brewery> result = breweriesSteps.searchBreweries(request);
 
         assertThat(result)
                 .as("API should handle negative page gracefully")
