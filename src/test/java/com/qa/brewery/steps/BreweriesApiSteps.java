@@ -37,10 +37,14 @@ public class BreweriesApiSteps {
             return List.of();
         }
 
-        List<Brewery> results = Arrays.asList(response.as(Brewery[].class));
-        log.info("Search completed. Found {} breweries", results.size());
-
-        return results;
+        try {
+            List<Brewery> results = Arrays.asList(response.as(Brewery[].class));
+            log.info("Search completed. Found {} breweries", results.size());
+            return results;
+        } catch (Exception e) {
+            log.warn("Failed to deserialize response as array. API may have returned error object: {}", e.getMessage());
+            return List.of();
+        }
     }
 
     @Step("Search breweries with request")
@@ -56,10 +60,14 @@ public class BreweriesApiSteps {
             return List.of();
         }
 
-        List<Brewery> results = Arrays.asList(response.as(Brewery[].class));
-        log.info("Search completed. Found {} breweries", results.size());
-
-        return results;
+        try {
+            List<Brewery> results = Arrays.asList(response.as(Brewery[].class));
+            log.info("Search completed. Found {} breweries", results.size());
+            return results;
+        } catch (Exception e) {
+            log.warn("Failed to deserialize response as array. API may have returned error object: {}", e.getMessage());
+            return List.of();
+        }
     }
 
     @Step("Get raw response for search breweries")
