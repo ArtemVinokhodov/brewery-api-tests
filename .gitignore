@@ -79,9 +79,10 @@ $RECYCLE.BIN/
 test-output/
 *.tmp
 
-# Allure
+# Allure reports
 allure-results/
 allure-report/
+.allure/
 
 # Surefire reports
 surefire-reports/

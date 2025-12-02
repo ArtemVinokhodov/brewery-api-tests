@@ -1,6 +1,7 @@
 package com.artem.brewery.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
@@ -9,20 +10,34 @@ public class Brewery {
 
     private String id;
     private String name;
-    private String brewery_type;
 
-    private String address_1;
-    private String address_2;
-    private String address_3;
+    @JsonProperty("brewery_type")
+    private String breweryType;
+
+    @JsonProperty("address_1")
+    private String address1;
+
+    @JsonProperty("address_2")
+    private String address2;
+
+    @JsonProperty("address_3")
+    private String address3;
 
     private String city;
-    private String state_province;
-    private String postal_code;
+
+    @JsonProperty("state_province")
+    private String stateProvince;
+
+    @JsonProperty("postal_code")
+    private String postalCode;
+
     private String country;
 
     private Double longitude;
     private Double latitude;
 
     private String phone;
-    private String website_url;
+
+    @JsonProperty("website_url")
+    private String websiteUrl;
 }

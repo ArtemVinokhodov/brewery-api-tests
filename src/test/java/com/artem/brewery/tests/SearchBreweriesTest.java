@@ -5,6 +5,7 @@ import com.artem.brewery.client.SearchBreweriesRequest;
 import com.artem.brewery.config.ApiConfig;
 import com.artem.brewery.dto.Brewery;
 import com.artem.brewery.manager.ApiManager;
+import io.qameta.allure.*;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -13,6 +14,8 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Epic("OpenBreweryDB API")
+@Feature("Search Breweries")
 public class SearchBreweriesTest {
 
     private ApiManager api;
@@ -25,7 +28,10 @@ public class SearchBreweriesTest {
     }
 
     @Test
-    public void search_withExistingName_returnsResultsWithCorrectSubstring() {
+    @Story("Positive Search Scenarios")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("Verify that search returns results when querying with an existing brewery name and respects per_page limit")
+    public void searchByExistingName() {
         SearchBreweriesRequest request = SearchBreweriesRequest.builder()
                 .query("dog")
                 .page(1)
@@ -50,7 +56,10 @@ public class SearchBreweriesTest {
     }
 
     @Test
-    public void search_withNonExistingQuery_returnsEmptyList() {
+    @Story("Negative Search Scenarios")
+    @Severity(SeverityLevel.NORMAL)
+    @Description("Verify that search returns empty list when querying with non-existing term")
+    public void searchByNonExistingQuery() {
         SearchBreweriesRequest request = SearchBreweriesRequest.builder()
                 .query("qwerty12345")
                 .page(1)
@@ -65,7 +74,10 @@ public class SearchBreweriesTest {
     }
 
     @Test
-    public void search_withSmallPerPage_limitsNumberOfResults() {
+    @Story("Pagination")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("Verify that API respects per_page parameter and limits the number of returned results")
+    public void searchWithPerPageLimit() {
         SearchBreweriesRequest request = SearchBreweriesRequest.builder()
                 .query("brew")
                 .page(1)
@@ -81,7 +93,10 @@ public class SearchBreweriesTest {
     }
 
     @Test
-    public void search_withDifferentPages_returnsDifferentResultSets() {
+    @Story("Pagination")
+    @Severity(SeverityLevel.NORMAL)
+    @Description("Verify that different pages return different result sets and pagination works correctly")
+    public void searchWithDifferentPages() {
         SearchBreweriesRequest firstPageRequest = SearchBreweriesRequest.builder()
                 .query("beer")
                 .page(1)
@@ -120,8 +135,10 @@ public class SearchBreweriesTest {
     }
 
     @Test
-    public void search_withTooLargePerPage_doesNotReturnMoreThanRequested() {
-
+    @Story("Boundary Testing")
+    @Severity(SeverityLevel.NORMAL)
+    @Description("Verify that API handles large per_page values correctly and does not exceed requested limit")
+    public void searchWithLargePerPage() {
         int requestedPerPage = 200;
 
         SearchBreweriesRequest request = SearchBreweriesRequest.builder()

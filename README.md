@@ -147,35 +147,84 @@ Test endpoint ordering logic if applicable.
 
 ---
 
-## 6. How to Run Tests
+## 6. Environment Configuration
+
+The project supports multiple environments through configuration files located in `src/main/resources/`:
+
+- `env.properties` - Default environment (production)
+- `env-dev.properties` - Development environment
+- `env-staging.properties` - Staging environment
+- `env-prod.properties` - Production environment
+
+### **Switching Environments**
+
+**Option 1: Using Maven**
+```bash
+# Run with default environment (production)
+mvn clean test
+
+# Run with specific environment
+mvn clean test -Denv=dev
+mvn clean test -Denv=staging
+mvn clean test -Denv=prod
+```
+
+**Option 2: Using IntelliJ IDEA**
+1. Run → Edit Configurations
+2. Add VM options: `-Denv=dev`
+3. Click Apply and run tests
+
+### **Configuration Properties**
+
+Each environment file contains:
+```properties
+base.url=https://api.openbrewerydb.org/v1
+```
+
+You can add more properties as needed (timeout, retry settings, etc.).
+
+---
+
+## 7. How to Run Tests
 
 ### **Using Maven**
 ```bash
+# Default environment
 mvn clean test
+
+# Specific environment
+mvn clean test -Denv=dev
 ```
 
 ### **Using IntelliJ IDEA**
 1. Open the project.
 2. Navigate to `src/test/java/com/artem/brewery/tests/SearchBreweriesTest.java`.
 3. Right-click the class and select **Run** with TestNG.
+4. (Optional) Add `-Denv=dev` in VM options for specific environment.
 
 ---
 
-## 7. Project Structure
+## 8. Project Structure
 ```
 src
  ├─ main
- │   └─ java
- │       └─ com.artem.brewery
- │            ├─ client
- │            │    ├─ OpenBreweryClient.java
- │            │    └─ SearchBreweriesRequest.java
- │            ├─ config
- │            │    └─ ApiConfig.java
- │            ├─ dto
- │            │    └─ Brewery.java
- │            └─ manager
- │                 └─ ApiManager.java
+ │   ├─ java
+ │   │   └─ com.artem.brewery
+ │   │        ├─ client
+ │   │        │    ├─ OpenBreweryClient.java
+ │   │        │    └─ SearchBreweriesRequest.java
+ │   │        ├─ config
+ │   │        │    ├─ ApiConfig.java
+ │   │        │    └─ ConfigLoader.java
+ │   │        ├─ dto
+ │   │        │    └─ Brewery.java
+ │   │        └─ manager
+ │   │             └─ ApiManager.java
+ │   └─ resources
+ │        ├─ env.properties
+ │        ├─ env-dev.properties
+ │        ├─ env-staging.properties
+ │        └─ env-prod.properties
  └─ test
      └─ java
          └─ com.artem.brewery.tests
@@ -184,7 +233,48 @@ src
 
 ---
 
-## 8. Technologies Used
+## 9. Allure Reporting
+
+The project is integrated with **Allure Framework** for rich test reporting with automatic request/response attachments.
+
+### **Generate and View Allure Report**
+
+```bash
+# Run tests and generate Allure results
+mvn clean test
+
+# Generate and open Allure report in browser
+mvn allure:serve
+
+# Or generate static HTML report
+mvn allure:report
+# Report will be in: target/site/allure-maven-plugin/index.html
+```
+
+### **Allure Features**
+
+-  **Automatic Request/Response Logging** - All API calls are attached to the report
+-  **Test Categorization** - Tests grouped by Epic, Feature, Story
+-  **Severity Levels** - Critical and Normal test priorities
+-  **Detailed Steps** - Each API call shown as a separate step
+-  **Rich Descriptions** - Clear test objectives and expected results
+-  **Timeline View** - Visual representation of test execution
+-  **Retries & History** - Track test stability over time
+
+### **Allure Annotations Used**
+
+```java
+@Epic("OpenBreweryDB API")           // Top-level feature group
+@Feature("Search Breweries")         // Feature under test
+@Story("Positive Search Scenarios")  // User story
+@Severity(SeverityLevel.CRITICAL)    // Test priority
+@Description("Test description...")  // Detailed description
+@Step("Step description...")         // Method-level step
+```
+
+---
+
+## 10. Technologies Used
 
 - Java 17
 - REST Assured
@@ -193,8 +283,9 @@ src
 - Lombok
 - AssertJ
 - Jackson
+- Allure Framework (for reporting)
 
-## 9. Notes
+## 11. Notes
 
 OpenBreweryDB is a public API, and field structure may change.
 
