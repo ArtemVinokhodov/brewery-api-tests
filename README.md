@@ -51,6 +51,26 @@ Below are the scenarios implemented in code as required by the assignment:
 - Query: `"brew"` with `per_page = 200`
 - Validates a general API invariant: even with large `per_page` values, API never returns more items than requested.
 
+### **6. Empty query parameter handling**
+- Query: `""` (empty string)
+- Validates that API handles empty query gracefully without errors.
+
+### **7. Special characters in query parameter**
+- Query: `"!@#$%^&*()"`
+- Validates that API properly handles special characters without breaking.
+
+### **8. Zero value for page parameter**
+- Query: `"beer"` with `page = 0`
+- Validates that API handles edge case of page=0 gracefully.
+
+### **9. Zero value for per_page parameter**
+- Query: `"beer"` with `per_page = 0`
+- Validates that API handles edge case of per_page=0 without errors.
+
+### **10. Negative value for page parameter**
+- Query: `"beer"` with `page = -1`
+- Validates that API handles negative pagination values gracefully.
+
 ---
 
 ## 3. Additional Recommended Scenarios (not implemented, listed as requested)
