@@ -1,8 +1,8 @@
-package com.artem.brewery.client;
+package com.qa.brewery.client;
 
 import io.qameta.allure.Step;
 import io.restassured.specification.RequestSpecification;
-import com.artem.brewery.dto.Brewery;
+import com.qa.brewery.dto.Brewery;
 
 import java.util.List;
 

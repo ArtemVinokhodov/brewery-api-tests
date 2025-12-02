@@ -149,7 +149,9 @@ Test endpoint ordering logic if applicable.
 
 ## 6. Environment Configuration
 
-The project supports multiple environments through configuration files located in `src/main/resources/`:
+The project uses **Owner library** for type-safe configuration management.
+
+Configuration files are located in `src/main/resources/`:
 
 - `env.properties` - Default environment (production)
 - `env-dev.properties` - Development environment
@@ -170,7 +172,7 @@ mvn clean test -Denv=prod
 ```
 
 **Option 2: Using IntelliJ IDEA**
-1. Run → Edit Configurations
+1. Run -> Edit Configurations
 2. Add VM options: `-Denv=dev`
 3. Click Apply and run tests
 
@@ -181,7 +183,13 @@ Each environment file contains:
 base.url=https://api.openbrewerydb.org/v1
 ```
 
-You can add more properties as needed (timeout, retry settings, etc.).
+### **Owner Library Benefits**
+
+-  Type-safe access to properties (no string keys in code)
+-  Default values via `@DefaultValue` annotation
+-  Automatic type conversion (String → int, boolean, etc.)
+-  Multiple sources support (system properties, files)
+-  Hot reload capability
 
 ---
 
@@ -198,7 +206,7 @@ mvn clean test -Denv=dev
 
 ### **Using IntelliJ IDEA**
 1. Open the project.
-2. Navigate to `src/test/java/com/artem/brewery/tests/SearchBreweriesTest.java`.
+2. Navigate to `src/test/java/com/qa/brewery/tests/SearchBreweriesTest.java`.
 3. Right-click the class and select **Run** with TestNG.
 4. (Optional) Add `-Denv=dev` in VM options for specific environment.
 
@@ -209,13 +217,13 @@ mvn clean test -Denv=dev
 src
  ├─ main
  │   ├─ java
- │   │   └─ com.artem.brewery
+ │   │   └─ com.qa.brewery
  │   │        ├─ client
  │   │        │    ├─ OpenBreweryClient.java
  │   │        │    └─ SearchBreweriesRequest.java
  │   │        ├─ config
  │   │        │    ├─ ApiConfig.java
- │   │        │    └─ ConfigLoader.java
+ │   │        │    └─ EnvironmentConfig.java
  │   │        ├─ dto
  │   │        │    └─ Brewery.java
  │   │        └─ manager
@@ -224,10 +232,11 @@ src
  │        ├─ env.properties
  │        ├─ env-dev.properties
  │        ├─ env-staging.properties
- │        └─ env-prod.properties
+ │        ├─ env-prod.properties
+ │        └─ log4j2.xml
  └─ test
      └─ java
-         └─ com.artem.brewery.tests
+         └─ com.qa.brewery.tests
               └─ SearchBreweriesTest.java
 ```
 
@@ -283,6 +292,8 @@ mvn allure:report
 - Lombok
 - AssertJ
 - Jackson
+- Owner (for configuration management)
+- Log4j2 (for logging)
 - Allure Framework (for reporting)
 
 ## 11. Notes

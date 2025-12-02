@@ -1,7 +1,7 @@
-package com.artem.brewery.manager;
+package com.qa.brewery.manager;
 
 import io.restassured.specification.RequestSpecification;
-import com.artem.brewery.client.OpenBreweryClient;
+import com.qa.brewery.client.OpenBreweryClient;
 
 public class ApiManager {
 

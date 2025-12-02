@@ -1,11 +1,12 @@
-package com.artem.brewery.tests;
+package com.qa.brewery.tests;
 
-import com.artem.brewery.client.OpenBreweryClient;
-import com.artem.brewery.client.SearchBreweriesRequest;
-import com.artem.brewery.config.ApiConfig;
-import com.artem.brewery.dto.Brewery;
-import com.artem.brewery.manager.ApiManager;
+import com.qa.brewery.client.OpenBreweryClient;
+import com.qa.brewery.client.SearchBreweriesRequest;
+import com.qa.brewery.config.ApiConfig;
+import com.qa.brewery.dto.Brewery;
+import com.qa.brewery.manager.ApiManager;
 import io.qameta.allure.*;
+import lombok.extern.log4j.Log4j2;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Log4j2
 @Epic("OpenBreweryDB API")
 @Feature("Search Breweries")
 public class SearchBreweriesTest {
@@ -23,8 +25,10 @@ public class SearchBreweriesTest {
 
     @BeforeClass
     public void setUp() {
+        log.info("Setting up API client for OpenBreweryDB tests");
         api = new ApiManager(ApiConfig.getInstance().getRequestSpec());
         breweries = api.breweries();
+        log.info("API client initialized successfully");
     }
 
     @Test

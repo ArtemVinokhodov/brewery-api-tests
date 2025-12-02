@@ -1,4 +1,4 @@
-package com.artem.brewery.client;
+package com.qa.brewery.client;
 
 import lombok.Builder;
 import lombok.Getter;
