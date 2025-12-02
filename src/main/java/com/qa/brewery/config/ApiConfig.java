@@ -18,10 +18,9 @@ public class ApiConfig {
 
     private ApiConfig() {
         this.config = ConfigFactory.create(EnvironmentConfig.class);
-        String baseUrl = config.baseUrl();
 
         this.requestSpec = new RequestSpecBuilder()
-                .setBaseUri(baseUrl)
+                .setBaseUri(getBaseUrl())
                 .setContentType(ContentType.JSON)
                 .addFilter(new AllureRestAssured())
                 .log(LogDetail.ALL)

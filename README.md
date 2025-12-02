@@ -24,9 +24,9 @@ Supported query parameters:
 
 ---
 
-## 2. Implemented Test Scenarios (5 core scenarios)
+## 2. Implemented Test Scenarios (10 scenarios total)
 
-Below are the scenarios implemented in code as required by the assignment:
+Below are the scenarios implemented in code. The assignment required 5 core scenarios, additionally 5 negative scenarios were implemented to demonstrate comprehensive edge case testing:
 
 ### **1. Search by existing substring returns non-empty results**
 - Query: `"dog"`
@@ -78,10 +78,10 @@ Below are the scenarios implemented in code as required by the assignment:
 These scenarios could be included in an extended test suite:
 
 ### **Functional**
-- Search with special characters (`"brew&co"`, `"!@#$%"`).
 - Case-insensitive search verification.
-- Search with unicode (e.g., `"łódź"`, `"kühn"`).
+- Search with unicode characters (e.g., `"łódź"`, `"kühn"`, emoji).
 - Search by exact match vs partial matching.
+- Search with URL-encoded characters.
 
 ### **Pagination**
 - Boundary values:  
@@ -110,6 +110,8 @@ Endpoint:
 This method returns full brewery lists with pagination and supports multiple filters.
 
 ### **Suggested Test Automation Approach**
+
+**Note:** The following are recommended approaches for automating the "List Breweries" method. The current project already implements the layered architecture for "Search Breweries".
 
 #### 1. **Layered Architecture**
 - **Client layer**: Encapsulates REST Assured calls.
@@ -155,15 +157,14 @@ Test endpoint ordering logic if applicable.
 
 | Task | Estimated Time |
 |------|----------------|
-| Implement base framework (specs, config, client) | 1–2 hours |
-| Add coverage for all parameters (`by_city`, `by_type`, etc.) | 4–6 hours |
-| Add pagination boundary tests | 1 hour |
-| JSON schema validation | 1 hour |
-| Data-driven testing setup | 1 hour |
-| Full documentation + cleanup | 1 hour |
+| Implement base framework (specs, config, client) | 2 hours |
+| Add coverage for all parameters (`by_city`, `by_type`, etc.) | 5 hours |
+| Add pagination boundary tests | 2 hours |
+| Negative testing scenarios (invalid params, edge cases) | 1.5 hours |
+| Response validation and schema checks | 1 hour |
+| Full documentation + cleanup | 0.5 hours |
 
-**Total estimated effort: 8-12 hours**  
-(depending on required coverage level).
+**Total estimated effort: 12 hours (1.5 days)**
 
 ---
 
