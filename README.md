@@ -216,9 +216,9 @@ base.url=https://api.openbrewerydb.org/v1
 
 ## 7. How to Run Tests
 
-### **Using Maven**
+### **Using Maven (with TestNG Suite)**
 ```bash
-# Default environment
+# Default environment - runs all tests via testng.xml
 mvn clean test
 
 # Specific environment
@@ -226,10 +226,15 @@ mvn clean test -Denv=dev
 ```
 
 ### **Using IntelliJ IDEA**
-1. Open the project.
-2. Navigate to `src/test/java/com/qa/brewery/tests/SearchBreweriesTest.java`.
-3. Right-click the class and select **Run** with TestNG.
-4. (Optional) Add `-Denv=dev` in VM options for specific environment.
+
+**Option 1: Run entire suite**
+1. Navigate to `src/test/resources/testng.xml`
+2. Right-click and select **Run**
+
+**Option 2: Run individual test class**
+1. Navigate to `src/test/java/com/qa/brewery/tests/SearchBreweriesTest.java`
+2. Right-click the class and select **Run** with TestNG
+3. (Optional) Add `-Denv=dev` in VM options for specific environment
 
 ---
 
@@ -256,11 +261,13 @@ src
  │        ├─ env-prod.properties
  │        └─ log4j2.xml
  └─ test
-     └─ java
-         ├─ com.qa.brewery.steps
-         │    └─ BreweriesApiSteps.java
-         └─ com.qa.brewery.tests
-              └─ SearchBreweriesTest.java
+     ├─ java
+     │   ├─ com.qa.brewery.steps
+     │   │    └─ BreweriesApiSteps.java
+     │   └─ com.qa.brewery.tests
+     │        └─ SearchBreweriesTest.java
+     └─ resources
+          └─ testng.xml
 ```
 
 ---

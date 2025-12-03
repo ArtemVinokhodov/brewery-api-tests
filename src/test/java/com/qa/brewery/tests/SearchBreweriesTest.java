@@ -213,8 +213,9 @@ public class SearchBreweriesTest {
         var result = breweriesSteps.searchBreweries(params);
 
         assertThat(result)
-                .as("API should return a valid (non-null) array for page=0")
-                .isNotNull();
+                .as("API should return at least one brewery for page=0")
+                .isNotEmpty()
+                .hasSizeGreaterThan(0);
     }
 
     @Test
@@ -254,7 +255,8 @@ public class SearchBreweriesTest {
         var result = breweriesSteps.searchBreweries(params);
 
         assertThat(result)
-                .as("API should handle negative page gracefully and return valid data")
-                .isNotNull();
+                .as("API should return at least one brewery for page=-1")
+                .isNotEmpty()
+                .hasSizeGreaterThan(0);
     }
 }

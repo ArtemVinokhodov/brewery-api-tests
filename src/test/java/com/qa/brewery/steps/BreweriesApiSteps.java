@@ -48,6 +48,8 @@ public class BreweriesApiSteps {
         Response response = client.searchBreweries(params);
         log.info("Response status: {}", response.statusCode());
 
+        response.then().statusCode(200);
+
         List<Brewery> results = Arrays.asList(response.as(Brewery[].class));
         log.info("Search completed. Found {} breweries", results.size());
 
