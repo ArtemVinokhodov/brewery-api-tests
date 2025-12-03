@@ -1,8 +1,8 @@
 package com.qa.brewery.steps;
 
 import com.qa.brewery.client.OpenBreweryClient;
+import com.qa.brewery.dto.BreweryDTO;
 import com.qa.brewery.dto.BrewerySearchParams;
-import com.qa.brewery.dto.Brewery;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import lombok.extern.log4j.Log4j2;
@@ -20,7 +20,7 @@ public class BreweriesApiSteps {
     }
 
     @Step("Search breweries with query, page and perPage")
-    public List<Brewery> searchBreweries(String query, int page, int perPage) {
+    public List<BreweryDTO> searchBreweries(String query, int page, int perPage) {
         log.info("Searching breweries: query='{}', page={}, perPage={}", query, page, perPage);
 
         BrewerySearchParams params = BrewerySearchParams.builder()
@@ -34,14 +34,14 @@ public class BreweriesApiSteps {
 
         response.then().statusCode(200);
 
-        List<Brewery> results = Arrays.asList(response.as(Brewery[].class));
+        List<BreweryDTO> results = Arrays.asList(response.as(BreweryDTO[].class));
         log.info("Search completed. Found {} breweries", results.size());
 
         return results;
     }
 
     @Step("Search breweries with params")
-    public List<Brewery> searchBreweries(BrewerySearchParams params) {
+    public List<BreweryDTO> searchBreweries(BrewerySearchParams params) {
         log.info("Searching breweries: query='{}', page={}, perPage={}",
                 params.getQuery(), params.getPage(), params.getPerPage());
 
@@ -50,7 +50,7 @@ public class BreweriesApiSteps {
 
         response.then().statusCode(200);
 
-        List<Brewery> results = Arrays.asList(response.as(Brewery[].class));
+        List<BreweryDTO> results = Arrays.asList(response.as(BreweryDTO[].class));
         log.info("Search completed. Found {} breweries", results.size());
 
         return results;
@@ -63,6 +63,8 @@ public class BreweriesApiSteps {
 
         Response response = client.searchBreweries(params);
         log.info("Response status: {}", response.statusCode());
+
+        response.then().statusCode(200);
 
         return response;
     }

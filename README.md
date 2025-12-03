@@ -94,7 +94,7 @@ These scenarios could be included in an extended test suite:
 - API capping logic if the API enforces limits.
 
 ### **Response structure**
-- All required fields exist in Brewery DTO.
+- All required fields exist in BreweryDTO.
 - Fields ignored safely when API adds new fields (`@JsonIgnoreProperties`).
 
 ### **Performance**
@@ -115,7 +115,7 @@ This method returns full brewery lists with pagination and supports multiple fil
 
 #### 1. **Layered Architecture**
 - **Client layer**: Encapsulates REST Assured calls.
-- **DTOs**: Brewery model mapped with Jackson.
+- **DTOs**: BreweryDTO model mapped with Jackson.
 - **Config layer**: Base URI, common request spec, logging.
 - **Test layer**: Test scenarios only, no direct REST Assured usage.
 
@@ -250,7 +250,7 @@ src
  │   │        │    ├─ ApiConfig.java
  │   │        │    └─ EnvironmentConfig.java
  │   │        ├─ dto
- │   │        │    ├─ Brewery.java
+ │   │        │    ├─ BreweryDTO.java
  │   │        │    └─ BrewerySearchParams.java
  │   │        └─ manager
  │   │             └─ ApiManager.java

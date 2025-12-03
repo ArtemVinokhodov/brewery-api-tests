@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Brewery {
+public class BreweryDTO {
 
     private String id;
     private String name;

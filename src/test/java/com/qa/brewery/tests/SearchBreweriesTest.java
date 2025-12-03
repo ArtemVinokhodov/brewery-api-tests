@@ -2,7 +2,7 @@ package com.qa.brewery.tests;
 
 import com.qa.brewery.dto.BrewerySearchParams;
 import com.qa.brewery.config.ApiConfig;
-import com.qa.brewery.dto.Brewery;
+import com.qa.brewery.dto.BreweryDTO;
 import com.qa.brewery.manager.ApiManager;
 import com.qa.brewery.steps.BreweriesApiSteps;
 import io.qameta.allure.*;
@@ -120,12 +120,12 @@ public class SearchBreweriesTest {
                 .isNotEmpty();
 
         var firstIds = firstPage.stream()
-                .map(Brewery::getId)
+                .map(BreweryDTO::getId)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
         var secondIds = secondPage.stream()
-                .map(Brewery::getId)
+                .map(BreweryDTO::getId)
                 .filter(Objects::nonNull)
                 .toList();
 
