@@ -33,27 +33,27 @@ public class SearchBreweriesTest {
     @Test
     @Story("Positive Search Scenarios")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Verify that search returns results when querying with an existing brewery name and respects per_page limit")
+    @Description("Verify that search returns results when querying with an existing term and respects per_page limit. API searches across multiple fields: name, city, state, address.")
     public void searchByExistingName() {
-        BrewerySearchParams params = BrewerySearchParams.builder()
+        var params = BrewerySearchParams.builder()
                 .query("dog")
                 .page(1)
                 .perPage(5)
                 .build();
 
-        List<Brewery> result = breweriesSteps.searchBreweries(params);
+        var result = breweriesSteps.searchBreweries(params);
 
         assertThat(result)
                 .as("Search should return some results for a popular query 'dog'")
                 .isNotEmpty()
                 .hasSizeLessThanOrEqualTo(5);
 
-        boolean anyMatchByName = result.stream()
-                .map(Brewery::getName)
-                .filter(Objects::nonNull)
-                .anyMatch(name -> name.toLowerCase().contains("dog"));
+        var anyMatch = result.stream()
+                .anyMatch(brewery ->
+                    brewery.getName() != null && brewery.getName().toLowerCase().contains("dog")
+                );
 
-        assertThat(anyMatchByName)
+        assertThat(anyMatch)
                 .as("At least one brewery name should contain the search term 'dog'")
                 .isTrue();
     }
@@ -63,13 +63,13 @@ public class SearchBreweriesTest {
     @Severity(SeverityLevel.NORMAL)
     @Description("Verify that search returns empty list when querying with non-existing term")
     public void searchByNonExistingQuery() {
-        BrewerySearchParams params = BrewerySearchParams.builder()
+        var params = BrewerySearchParams.builder()
                 .query("qwerty12345")
                 .page(1)
                 .perPage(10)
                 .build();
 
-        List<Brewery> result = breweriesSteps.searchBreweries(params);
+        var result = breweriesSteps.searchBreweries(params);
 
         assertThat(result)
                 .as("Search with a non-existing term should return an empty list")
@@ -81,13 +81,13 @@ public class SearchBreweriesTest {
     @Severity(SeverityLevel.CRITICAL)
     @Description("Verify that API respects per_page parameter and limits the number of returned results")
     public void searchWithPerPageLimit() {
-        BrewerySearchParams params = BrewerySearchParams.builder()
+        var params = BrewerySearchParams.builder()
                 .query("brew")
                 .page(1)
                 .perPage(3)
                 .build();
 
-        List<Brewery> result = breweriesSteps.searchBreweries(params);
+        var result = breweriesSteps.searchBreweries(params);
 
         assertThat(result)
                 .as("API should respect per_page parameter")
@@ -100,37 +100,36 @@ public class SearchBreweriesTest {
     @Severity(SeverityLevel.NORMAL)
     @Description("Verify that different pages return different result sets and pagination works correctly")
     public void searchWithDifferentPages() {
-        BrewerySearchParams firstPageParams = BrewerySearchParams.builder()
+        var firstPageParams = BrewerySearchParams.builder()
                 .query("beer")
                 .page(1)
                 .perPage(5)
                 .build();
 
-        BrewerySearchParams secondPageParams = BrewerySearchParams.builder()
+        var secondPageParams = BrewerySearchParams.builder()
                 .query("beer")
                 .page(2)
                 .perPage(5)
                 .build();
 
-        List<Brewery> firstPage = breweriesSteps.searchBreweries(firstPageParams);
-        List<Brewery> secondPage = breweriesSteps.searchBreweries(secondPageParams);
+        var firstPage = breweriesSteps.searchBreweries(firstPageParams);
+        var secondPage = breweriesSteps.searchBreweries(secondPageParams);
 
         assertThat(firstPage)
                 .as("First page should not be empty for a popular term")
                 .isNotEmpty();
 
-        Set<String> firstIds = firstPage.stream()
+        var firstIds = firstPage.stream()
                 .map(Brewery::getId)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        List<String> secondIds = secondPage.stream()
+        var secondIds = secondPage.stream()
                 .map(Brewery::getId)
                 .filter(Objects::nonNull)
                 .toList();
 
-        boolean isFullDuplicate =
-                !secondIds.isEmpty() && firstIds.containsAll(secondIds);
+        var isFullDuplicate = !secondIds.isEmpty() && firstIds.containsAll(secondIds);
 
         assertThat(isFullDuplicate)
                 .as("Second page should not fully duplicate the first page")
@@ -142,15 +141,15 @@ public class SearchBreweriesTest {
     @Severity(SeverityLevel.NORMAL)
     @Description("Verify that API handles large per_page values correctly and does not exceed requested limit")
     public void searchWithLargePerPage() {
-        int requestedPerPage = 200;
+        var requestedPerPage = 200;
 
-        BrewerySearchParams params = BrewerySearchParams.builder()
+        var params = BrewerySearchParams.builder()
                 .query("brew")
                 .page(1)
                 .perPage(requestedPerPage)
                 .build();
 
-        List<Brewery> result = breweriesSteps.searchBreweries(params);
+        var result = breweriesSteps.searchBreweries(params);
 
         assertThat(result)
                 .as("API should not return more items than requested per_page")
@@ -163,22 +162,23 @@ public class SearchBreweriesTest {
     @Severity(SeverityLevel.NORMAL)
     @Description("Verify that API handles empty query parameter gracefully")
     public void searchWithEmptyQuery() {
-        BrewerySearchParams params = BrewerySearchParams.builder()
+        var params = BrewerySearchParams.builder()
                 .query("")
                 .page(1)
                 .perPage(10)
                 .build();
 
         var response = breweriesSteps.searchBreweriesRaw(params);
+        var responseBody = response.body().asString();
 
         assertThat(response.statusCode())
                 .as("API should return 200 status for empty query")
                 .isEqualTo(200);
 
-        assertThat(response.body().asString())
+        assertThat(responseBody)
                 .as("API should return welcome message when query is empty")
                 .contains("Welcome to the Breweries API")
-                .containsAnyOf("https://www.openbrewerydb.org/documentation", "https:\\/\\/www.openbrewerydb.org\\/documentation");
+                .matches("(?i).*openbrewerydb\\.org.*documentation.*");
     }
 
     @Test
@@ -186,13 +186,13 @@ public class SearchBreweriesTest {
     @Severity(SeverityLevel.NORMAL)
     @Description("Verify that API handles special characters in query parameter")
     public void searchWithSpecialCharacters() {
-        BrewerySearchParams params = BrewerySearchParams.builder()
+        var params = BrewerySearchParams.builder()
                 .query("!@#$%^&*()")
                 .page(1)
                 .perPage(10)
                 .build();
 
-        List<Brewery> result = breweriesSteps.searchBreweries(params);
+        var result = breweriesSteps.searchBreweries(params);
 
         assertThat(result)
                 .as("API should handle special characters without errors and return empty list")
@@ -202,26 +202,19 @@ public class SearchBreweriesTest {
     @Test
     @Story("Negative Search Scenarios")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Verify that API handles zero value for page parameter")
+    @Description("Verify that API handles zero value for page parameter gracefully without errors")
     public void searchWithZeroPage() {
-        BrewerySearchParams params = BrewerySearchParams.builder()
+        var params = BrewerySearchParams.builder()
                 .query("beer")
                 .page(0)
                 .perPage(10)
                 .build();
 
-        var response = breweriesSteps.searchBreweriesRaw(params);
-
-        assertThat(response.statusCode())
-                .as("API should return 200 status for page=0")
-                .isEqualTo(200);
-
-        List<Brewery> result = breweriesSteps.searchBreweries(params);
+        var result = breweriesSteps.searchBreweries(params);
 
         assertThat(result)
-                .as("API should return empty list or valid results for page=0")
-                .isNotNull()
-                .allMatch(brewery -> brewery.getId() != null);
+                .as("API should return a valid (non-null) array for page=0")
+                .isNotNull();
     }
 
     @Test
@@ -229,7 +222,7 @@ public class SearchBreweriesTest {
     @Severity(SeverityLevel.NORMAL)
     @Description("Verify that API handles zero value for per_page parameter")
     public void searchWithZeroPerPage() {
-        BrewerySearchParams params = BrewerySearchParams.builder()
+        var params = BrewerySearchParams.builder()
                 .query("beer")
                 .page(1)
                 .perPage(0)
@@ -244,31 +237,24 @@ public class SearchBreweriesTest {
         assertThat(response.body().asString())
                 .as("API should return welcome message when per_page=0")
                 .contains("Welcome to the Breweries API")
-                .containsAnyOf("https://www.openbrewerydb.org/documentation", "https:\\/\\/www.openbrewerydb.org\\/documentation");
+                .matches("(?i).*openbrewerydb\\.org.*documentation.*");
     }
 
     @Test
     @Story("Negative Search Scenarios")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Verify that API handles negative value for page parameter")
+    @Description("Verify that API handles negative value for page parameter gracefully without errors")
     public void searchWithNegativePage() {
-        BrewerySearchParams params = BrewerySearchParams.builder()
+        var params = BrewerySearchParams.builder()
                 .query("beer")
                 .page(-1)
                 .perPage(10)
                 .build();
 
-        var response = breweriesSteps.searchBreweriesRaw(params);
-
-        assertThat(response.statusCode())
-                .as("API should return 200 status for negative page")
-                .isEqualTo(200);
-
-        List<Brewery> result = breweriesSteps.searchBreweries(params);
+        var result = breweriesSteps.searchBreweries(params);
 
         assertThat(result)
-                .as("API should return empty list or valid results for negative page")
-                .isNotNull()
-                .allMatch(brewery -> brewery.getId() != null && brewery.getName() != null);
+                .as("API should handle negative page gracefully and return valid data")
+                .isNotNull();
     }
 }

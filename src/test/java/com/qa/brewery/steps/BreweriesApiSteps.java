@@ -32,19 +32,12 @@ public class BreweriesApiSteps {
         Response response = client.searchBreweries(params);
         log.info("Response status: {}", response.statusCode());
 
-        if (response.statusCode() != 200) {
-            log.warn("Non-200 status code received: {}", response.statusCode());
-            return List.of();
-        }
+        response.then().statusCode(200);
 
-        try {
-            List<Brewery> results = Arrays.asList(response.as(Brewery[].class));
-            log.info("Search completed. Found {} breweries", results.size());
-            return results;
-        } catch (Exception e) {
-            log.warn("Failed to deserialize response as array. API may have returned error object: {}", e.getMessage());
-            return List.of();
-        }
+        List<Brewery> results = Arrays.asList(response.as(Brewery[].class));
+        log.info("Search completed. Found {} breweries", results.size());
+
+        return results;
     }
 
     @Step("Search breweries with params")
@@ -55,19 +48,10 @@ public class BreweriesApiSteps {
         Response response = client.searchBreweries(params);
         log.info("Response status: {}", response.statusCode());
 
-        if (response.statusCode() != 200) {
-            log.warn("Non-200 status code received: {}", response.statusCode());
-            return List.of();
-        }
+        List<Brewery> results = Arrays.asList(response.as(Brewery[].class));
+        log.info("Search completed. Found {} breweries", results.size());
 
-        try {
-            List<Brewery> results = Arrays.asList(response.as(Brewery[].class));
-            log.info("Search completed. Found {} breweries", results.size());
-            return results;
-        } catch (Exception e) {
-            log.warn("Failed to deserialize response as array. API may have returned error object: {}", e.getMessage());
-            return List.of();
-        }
+        return results;
     }
 
     @Step("Get raw response for search breweries")
