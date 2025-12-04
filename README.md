@@ -122,34 +122,17 @@ This method returns full brewery lists with pagination and supports multiple fil
 (This approach is already implemented in this project.)
 
 #### 2. **Test Design Techniques**
-Use classic API testing techniques:
 
-#####  **Equivalence Partitioning**
-- Valid pages (1, 2…)
-- Invalid pages (0, -1)
-- Boundary values for `per_page`
+**Already implemented for Search Breweries:**
+- **Equivalence Partitioning**: Valid/invalid pages (0, -1, 1, 2), valid/invalid per_page values
+- **Boundary Value Analysis**: per_page boundaries (3, 200), edge cases (page=0, per_page=0)
+- **Negative Testing**: Empty query, special characters, zero/negative pagination values
 
-#####  **Boundary Value Analysis**
-- `per_page`: 1, 50, 200, >200
-- `page`: 1, 2, large numbers
-
-#####  **Negative Testing**
-- Invalid parameter types (string instead of number)
-- Missing parameters
-- Unsupported filters
-
-#####  **Data-Driven Testing**
-- Using different combinations of filters for List Breweries:
-    - `by_city`
-    - `by_type`
-    - `by_state`
-    - `by_country`
-
-#####  **Schema Validation**
-- Validate response structure with JSON schema.
-
-#####  **Sorting Validation**
-Test endpoint ordering logic if applicable.
+**Planned for List Breweries (future coverage):**
+- **Data-Driven Testing**: Different filter combinations (`by_city`, `by_type`, `by_state`, `by_country`)
+- **Schema Validation**: Validate response structure with JSON schema
+- **Sorting Validation**: Test endpoint ordering logic if applicable
+- **Extended Negative Cases**: Invalid parameter types, missing parameters, unsupported filters
 
 ---
 
